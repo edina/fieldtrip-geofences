@@ -1,0 +1,14 @@
+{
+    "name": "fieldtrip-geofences",
+    "version": "0.0.1",
+    "homepage": "https://github.com/edina/fieldtrip-geofences",
+    "description": "Geofences is a Fieldtrip Open plugin for handling geofences.",
+    "main": "src/www/js/gps-tracking.js",
+    "keywords": [
+        "fieldtrip-open",
+        "geofences"
+    ],
+    "ignore": [
+        "**/.*"
+    ]
+}

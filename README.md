@@ -1,0 +1,2 @@
+Fieldtrip Open Geofences plugin
+===============================
