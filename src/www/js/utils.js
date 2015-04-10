@@ -33,8 +33,22 @@ define(function(require) {
         localStorage.setItem(key, string);
     };
 
+    var paramsFromURL = function(urlString) {
+        var paramsObject = {};
+        var parts = urlString.match(/\?(?:(.+?)=(.+?))(?:\&(.+?)=(.+?))*\&?$/);
+
+        if (parts !== null) {
+            for (var i = 0, len = parts.length; i < len; i += 2) {
+                paramsObject[parts[i + 1]] = parts[i + 2];
+            }
+        }
+
+        return paramsObject;
+    };
+
     return {
         getLocalItem: getLocalItem,
-        setLocalItem: setLocalItem
+        setLocalItem: setLocalItem,
+        paramsFromURL: paramsFromURL
     };
 });

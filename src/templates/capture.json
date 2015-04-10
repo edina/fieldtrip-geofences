@@ -1,0 +1,19 @@
+{
+    "body": {
+        "section3": {
+            "title": "Plugins",
+            "items": {
+                "item1": {
+                    "div": {"class": "ui-block-a"},
+                    "a": {"class": "geofences-page-button", "href": "#"},
+                    "img": {
+                            "src": "plugins/geofences/css/images/geofences-button@2x.png",
+                            "alt": "View Geofences"
+
+                            },
+                    "title": "Geofences"
+                }
+            }
+        }
+    }
+}
