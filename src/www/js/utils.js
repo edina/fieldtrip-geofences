@@ -33,6 +33,11 @@ define(function(require) {
         localStorage.setItem(key, string);
     };
 
+    /*
+     * Extract the parameters from an url
+     * @param urlString a url string in the form of ?name1=value1&name2=value2
+     * @returns an object with {name1: value1, name2: value2}
+     */
     var paramsFromURL = function(urlString) {
         var paramsObject = {};
         var parts = urlString.match(/\?(?:(.+?)=(.+?))(?:\&(.+?)=(.+?))*\&?$/);
