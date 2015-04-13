@@ -22,12 +22,25 @@ define(function(require) {
 
     var templates = {};
 
-    templates.editorItem = _.template(
+    templates.groupItem = _.template(
+        '<li data-role="list-divider" data-divider-theme="b">' +
+            '<h2><%- groupName %></h2>' +
+        '</li>'
+    );
+
+    templates.geofenceItem = _.template(
         '<li>' +
             '<a href="<%= geofenceUrl %>">' +
-                '<h2><%- editorName %></h2>' +
+                '<h2><%- geofenceName %></h2>' +
             '</a>' +
         '</li>'
+    );
+
+    templates.geofenceDetail = _.template(
+        '<h2><%- geofenceName %></h2>' +
+        '<div class="geofence-switch-container">' +
+            '<input type="checkbox" class="geofence-switch" data-role="flipswitch">' +
+        '</div>'
     );
 
     /**
@@ -46,13 +59,9 @@ define(function(require) {
         $form
             .find('[data-geofences]')
             .each(function(i, el) {
-                var geofenceFile;
-                var geofenceName;
-
-                geofenceFile = $(el).data('geofences');
-                geofenceName = geofenceFile.match(/(.*)\.json$/)[1];
                 geofence = {};
-                geofence[geofenceName] = geofenceFile;
+                geofence.filename = $(el).data('geofences');
+                geofence.name = geofence.filename.match(/(.*)\.json$/)[1];
 
                 geofences = utils.getLocalItem('geofences');
                 // Initialize the geofences as empty object if null
@@ -76,24 +85,46 @@ define(function(require) {
     });
 
     $(document).on('pagebeforeshow', '#geofences-main-page', function() {
-        var geofences = utils.getLocalItem('geofences');
+        var _geofences = utils.getLocalItem('geofences');
+        var geofences;
         var html = '';
-        for (var editorName in geofences) {
-            if (geofences.hasOwnProperty(editorName)) {
-                html += templates.editorItem({
-                    editorName: editorName,
-                    geofenceUrl: GEOFENCE_PAGE + '?editor=' + editorName
+
+        for (var group in _geofences) {
+            if (_geofences.hasOwnProperty(group)) {
+                html += templates.groupItem({
+                    groupName: group
                 });
+
+                geofences = _geofences[group];
+
+                for (var i = 0, len = geofences.length; i < len; i++) {
+                    html += templates.geofenceItem({
+                        geofenceName: geofences[i].name,
+                        geofenceUrl: GEOFENCE_PAGE + '?group=' + group + '&id=' + i
+                    });
+                }
             }
         }
-        $('#geofences-editor-list')
+        $('#geofences-group-list')
             .html(html)
             .listview('refresh');
     });
 
     $(document).on('pagebeforeshow', '#geofences-detail-page', function() {
         var params = utils.paramsFromURL($(this).data('url'));
-        console.debug(params);
+        var geofences = utils.getLocalItem('geofences');
+        var geofence = geofences[params.group][params.id];
+        var html = '';
+
+        html += templates.geofenceDetail({
+            geofenceName: geofence.name,
+            geofenceFilename: geofence.filename
+        });
+
+        $('#geofence-detail-container')
+            .html(html)
+            .find('.geofence-switch')
+            .flipswitch();
     });
 
     // Inject the plugin styles

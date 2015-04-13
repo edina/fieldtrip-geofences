@@ -3,6 +3,23 @@
     height: 60px;
 }
 
-#geofences-main-page div.ui-content {
-    padding: 1em;
+#geofences-properties-list > li > *,
+#geofences-group-list > li > * {
+    margin-left: 12px;
+    margin-right: 12px;
+}
+
+#geofences-group-list > li.ui-bar-b {
+    background-color: #254c95
+}
+
+#geofences-secondary-toolbar {
+    height: 28px;
+    background-color: #2b477b;
+    padding-top: 10px;
+    padding-left: 15px;
+    color: #ffffff /*{a-bup-color}*/;
+    font-size: 15px;
+    text-shadow: 0 /*{a-bup-shadow-x}*/ 1px /*{a-bup-shadow-y}*/ 0 /*{a-bup-shadow-radius}*/ #444444 /*{a-bup-shadow-color}*/;
+    margin-bottom: 0.78em;
 }
