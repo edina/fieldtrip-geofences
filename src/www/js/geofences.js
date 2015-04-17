@@ -2,23 +2,13 @@
 
 define(function(require) {
     var records = require('records');
+    var file = require('file');
     var utils = require('./utils');
+    var geofencesCore = require('./geofences-core');
     var _ = require('underscore');
 
-    var geofence = window.geofence;
     var PLUGIN_PATH = 'plugins/geofences';
     var GEOFENCE_PAGE = 'geofences-detail-page.html';
-
-    // Check for the presence of the cordova plugin
-    if (geofence === undefined) {
-        console.warn('Geofence plugin not installed');
-        console.warn('Please include com.cowbell.cordova.geofence in your project');
-        //return;
-    }
-    else {
-        // Initialize cordova plugin
-        geofence.initialize();
-    }
 
     var templates = {};
 
@@ -112,19 +102,68 @@ define(function(require) {
 
     $(document).on('pagebeforeshow', '#geofences-detail-page', function() {
         var params = utils.paramsFromURL($(this).data('url'));
-        var geofences = utils.getLocalItem('geofences');
-        var geofence = geofences[params.group][params.id];
+        var globalGeofences = utils.getLocalItem('geofences');
+        var geofences = globalGeofences[params.group][params.id];
+        var parsedGeofences;
+        var fetchAvailableGeofences;
+        var fetchActiveGeofences;
+        var $flipswitch;
         var html = '';
 
         html += templates.geofenceDetail({
-            geofenceName: geofence.name,
-            geofenceFilename: geofence.filename
+            geofenceName: geofences.name,
+            geofenceFilename: geofences.filename
         });
 
-        $('#geofence-detail-container')
+        $flipswitch = $('#geofence-detail-container')
             .html(html)
             .find('.geofence-switch')
             .flipswitch();
+
+        $flipswitch.on('change', function(evt) {
+            var target = evt.target;
+            if (target.checked) {
+                geofencesCore.enable(parsedGeofences);
+            }
+            else {
+                geofencesCore.disable(parsedGeofences);
+            }
+        });
+
+        fetchAvailableGeofences = file
+            .readJSONFromFS(records.getEditorsDir(), geofences.filename)
+            .then(function(json) {
+                parsedGeofences = geofencesCore.parseGeoJSON(json);
+                return parsedGeofences;
+            })
+            .fail(function(err) {
+                console.error(err);
+            });
+
+        fetchActiveGeofences = geofencesCore.getActive();
+
+        $.when(fetchAvailableGeofences, fetchActiveGeofences)
+            .done(function(availableGeofences, activeGeofences) {
+                var checked = true;
+                var activeIDs;
+
+                activeIDs = activeGeofences.map(function(geofence) {
+                    return geofence.id;
+                });
+
+                for (var i = 0, len = availableGeofences.length; i < len; i++) {
+                    console.debug(availableGeofences[i].id);
+
+                    if (activeIDs.indexOf(availableGeofences[i].id) < 0) {
+                        checked = false;
+                    }
+                }
+
+                $flipswitch
+                    .prop('checked', checked)
+                    .flipswitch('refresh');
+            });
+
     });
 
     // Inject the plugin styles
