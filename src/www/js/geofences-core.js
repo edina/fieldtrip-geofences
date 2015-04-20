@@ -19,7 +19,12 @@ define(function(require) {
         };
     }
 
-    var getTransition = function(events) {
+    /**
+     * Transform the events to transition number
+     * @param events and array with ENTER/EXIT/DWELL events as string
+     * @returns a transition number
+     */
+    var parseTransitions = function(events) {
         var transition = 0;
         for (var i = 0, len = events.length; i < len; i++) {
             switch (events[i]) {
@@ -38,6 +43,10 @@ define(function(require) {
         return transition;
     };
 
+    /**
+     * Enable a list of geofences
+     * @param list of geofences
+     */
     var enable = function(geofences) {
         Geofence.addOrUpdate(geofences)
         .then(function() {
@@ -47,6 +56,10 @@ define(function(require) {
         });
     };
 
+    /**
+     * Disable a list of geofences
+     * @param list of geofences
+     */
     var disable = function(geofences) {
         var geofencesIds;
 
@@ -62,6 +75,11 @@ define(function(require) {
         });
     };
 
+    /**
+     * Parse a geojson feature into a geofence
+     * @param feature a geojson feature
+     * @returns a geofence
+     */
     var parseGeoJSONFeature = function(feature) {
         var geofence = null;
         var properties;
@@ -77,7 +95,7 @@ define(function(require) {
                     latitude: geometry.coordinates[1],
                     longitude: geometry.coordinates[0],
                     radius: properties.radius,
-                    transitionType: getTransition(properties.events),
+                    transitionType: parseTransitions(properties.events),
                     notification: {
                         id: notification.id,
                         title: notification.title,
@@ -93,6 +111,11 @@ define(function(require) {
         return geofence;
     };
 
+    /**
+     * Parse a geojson
+     * @param a geojson object
+     * @returns a list of geofences
+     */
     var parseGeoJSON = function(geojson) {
         var geofences = [];
         var geofence;
@@ -115,6 +138,10 @@ define(function(require) {
         return geofences;
     };
 
+    /**
+     * Get active geofencces
+     * @returns a list of active geofences in the device
+     */
     var getActive = function() {
         var deferred = $.Deferred();
 
