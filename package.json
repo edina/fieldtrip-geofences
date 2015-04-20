@@ -19,7 +19,7 @@
   "authors": [
     "R. Gamez"
   ],
-  "license": "BSD",
+  "license": "BSD-4-Clause",
   "dependencies": {
     "jquery": "^1.11.2"
   },
