@@ -69,23 +69,25 @@ define(function(require) {
     // Add the plugin editor process to the pipeline
     records.addProcessEditor(extractGeofences);
 
+    // Bind the click to navigate to the geofences page
     $(document).on('vclick', '.geofences-page-button', function(event) {
         event.preventDefault();
         $('body').pagecontainer('change', 'geofences-main-page.html');
     });
 
+    // Render the groups of geofences a a list view
     $(document).on('pagebeforeshow', '#geofences-main-page', function() {
-        var _geofences = utils.getLocalItem('geofences');
+        var globalGeofences = utils.getLocalItem('geofences');
         var geofences;
         var html = '';
 
-        for (var group in _geofences) {
-            if (_geofences.hasOwnProperty(group)) {
+        for (var group in globalGeofences) {
+            if (globalGeofences.hasOwnProperty(group)) {
                 html += templates.groupItem({
                     groupName: group
                 });
 
-                geofences = _geofences[group];
+                geofences = globalGeofences[group];
 
                 for (var i = 0, len = geofences.length; i < len; i++) {
                     html += templates.geofenceItem({
@@ -100,6 +102,7 @@ define(function(require) {
             .listview('refresh');
     });
 
+    // Render the detail or a group of geofences
     $(document).on('pagebeforeshow', '#geofences-detail-page', function() {
         var params = utils.paramsFromURL($(this).data('url'));
         var globalGeofences = utils.getLocalItem('geofences');
@@ -130,6 +133,7 @@ define(function(require) {
             }
         });
 
+        // Fetch the geofences of this group ofe geofences
         fetchAvailableGeofences = file
             .readJSONFromFS(records.getEditorsDir(), geofences.filename)
             .then(function(json) {
@@ -140,8 +144,10 @@ define(function(require) {
                 console.error(err);
             });
 
+        // Fetch the geofences active in the device
         fetchActiveGeofences = geofencesCore.getActive();
 
+        // Pair active geofences with the geofences of this group
         $.when(fetchAvailableGeofences, fetchActiveGeofences)
             .done(function(availableGeofences, activeGeofences) {
                 var checked = true;
