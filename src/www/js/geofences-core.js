@@ -14,7 +14,7 @@ define(function(require) {
         Geofence.initialize();
         Geofence.receiveTransition = function(geofences) {
             geofences.forEach(function(geo) {
-                console.log('Geofence transition detected', geo);
+                console.debug('Geofence transition detected', geo);
             });
         };
     }
@@ -48,6 +48,11 @@ define(function(require) {
      * @param list of geofences
      */
     var enable = function(geofences) {
+        if (geofences === undefined) {
+            console.debug('No geofences to enable ->' + geofences);
+            return;
+        }
+
         Geofence.addOrUpdate(geofences)
         .then(function() {
             console.log('Geofence successfully added');
@@ -62,6 +67,10 @@ define(function(require) {
      */
     var disable = function(geofences) {
         var geofencesIds;
+        if (geofences === undefined) {
+            console.debug('No geofences to disable ->' + geofences);
+            return;
+        }
 
         geofencesIds = geofences.map(function(geofences) {
             return geofences.id;
@@ -100,6 +109,9 @@ define(function(require) {
                         id: notification.id,
                         title: notification.title,
                         text: notification.text,
+                        data: {
+                            action: notification.action
+                        },
                         openAppOnClick: true
                     }
                 };

@@ -168,6 +168,9 @@ define(function(require) {
                 $flipswitch
                     .prop('checked', checked)
                     .flipswitch('refresh');
+            })
+            .fail(function(err) {
+                console.debug('Error pairing the geofences: ' + err);
             });
 
     });
