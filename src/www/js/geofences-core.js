@@ -3,6 +3,7 @@
 define(function(require) {
     var Geofence = window.geofence;
     var geofenceTransitionType = window.TransitionType;
+    var actions = {};
 
     // Check for the presence of the cordova plugin
     if (Geofence === undefined) {
@@ -16,6 +17,12 @@ define(function(require) {
             geofences.forEach(function(geo) {
                 console.debug('Geofence transition detected', geo);
             });
+        };
+
+        Geofence.receiveData = function(data) {
+            if (data.action) {
+                processAction(data.action);
+            }
         };
     }
 
@@ -109,12 +116,13 @@ define(function(require) {
                         id: notification.id,
                         title: notification.title,
                         text: notification.text,
-                        data: {
-                            action: notification.action
-                        },
                         openAppOnClick: true
                     }
                 };
+
+                if (notification.action) {
+                    geofence.notification.action = notification.action;
+                }
             break;
             default:
                 // TODO: cover a polygon with geofences
@@ -151,6 +159,39 @@ define(function(require) {
     };
 
     /**
+     * Register an action handler for  aspecific activity
+     * @param action action name
+     * @param func function to handle the action
+     */
+    var registerAction = function(action, func) {
+        if (typeof func !== 'function') {
+            console.error('Can\'t register a non-function for the action: ' + action);
+            return;
+        }
+
+        if (!actions.hasOwnProperty(action)) {
+            actions[action] = [];
+        }
+        actions[action].push(func);
+    };
+
+    /**
+     * Invoke all the functions registered for the action
+     * @action an rpc like object with method and params
+     */
+    var processAction = function(action) {
+        var functions;
+
+        if (actions.hasOwnProperty(action.method)) {
+            functions = actions[action.method];
+
+            for (var i = 0, len = functions.length; i < len; i++) {
+                functions[i].call(this, action);
+            }
+        }
+    };
+
+    /**
      * Get active geofencces
      * @returns a list of active geofences in the device
      */
@@ -174,6 +215,7 @@ define(function(require) {
         disable: disable,
         enable: enable,
         getActive: getActive,
-        parseGeoJSON: parseGeoJSON
+        parseGeoJSON: parseGeoJSON,
+        registerAction: registerAction
     };
 });
