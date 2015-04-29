@@ -52,6 +52,7 @@ define(function(require) {
                 geofence = {};
                 geofence.filename = $(el).data('geofences');
                 geofence.name = geofence.filename.match(/(.*)\.json$/)[1];
+                geofence.group = group;
 
                 geofences = utils.getLocalItem('geofences');
                 // Initialize the geofences as empty object if null
@@ -68,6 +69,18 @@ define(function(require) {
 
     // Add the plugin editor process to the pipeline
     records.addProcessEditor(extractGeofences);
+
+    // Open the editor passed in the action
+    var openEditor = function(action) {
+        // TODO: Fix this workaround, inject the group when the geofence is loaded?
+        var group = action.params.group || records.EDITOR_GROUP.PRIVATE;
+        if (action.params.type === 'editor') {
+            records.annotate(group, action.params.name);
+        }
+    };
+
+    // Register the open action
+    geofencesCore.registerAction('open', openEditor);
 
     // Bind the click to navigate to the geofences page
     $(document).on('vclick', '.geofences-page-button', function(event) {
