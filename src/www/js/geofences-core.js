@@ -121,7 +121,8 @@ define(function(require) {
                 };
 
                 if (notification.action) {
-                    geofence.notification.action = notification.action;
+                    geofence.notification.data = {};
+                    geofence.notification.data.action = notification.action;
                 }
             break;
             default:
