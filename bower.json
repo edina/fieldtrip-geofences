@@ -1,9 +1,12 @@
 {
     "name": "fieldtrip-geofences",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "homepage": "https://github.com/edina/fieldtrip-geofences",
     "description": "Geofences is a Fieldtrip Open plugin for handling geofences.",
     "main": "src/www/js/gps-tracking.js",
+    "authors": [
+        "Ruben Gamez <ruben.gamez@ed.ac.uk>"
+    ],
     "keywords": [
         "fieldtrip-open",
         "geofences"
