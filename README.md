@@ -13,7 +13,7 @@ Fieldtrip Open Geofences plugin
 
 ## Geofences
 
-A geojson containing the [geofences](https://github.com/edina/fieldtrip-open/wiki/Geofences)
+A geojson containing the [geofences](https://github.com/edina/fieldtrip-open/wiki/Internal#geofences)
 
 ## Requirements
 
